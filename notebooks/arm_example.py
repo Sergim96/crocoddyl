@@ -63,8 +63,8 @@ q0 = np.array([2.0, 1.5, -2.0, 0.0, 0.0, 0.0, 0.0]).T
 x0 = np.concatenate([q0, pinocchio.utils.zero(state.nv)])
 problem = crocoddyl.ShootingProblem(x0, [runningModel] * T, terminalModel)
 
-# Creating the DDP solver for this OC problem, defining a logger
-ddp = crocoddyl.SolverDDP(problem)
+# Creating the FDDP solver for this OC problem, defining a logger
+ddp = crocoddyl.SolverFDDP(problem)
 ddp.setCallbacks([crocoddyl.CallbackVerbose()])
 
 # Solving it with the DDP algorithm
