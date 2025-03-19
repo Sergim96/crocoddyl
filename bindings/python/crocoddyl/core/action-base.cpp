@@ -97,10 +97,8 @@ struct ActionModelAbstractVisitor
                       "number of inequality constraints")
         .def("get_ng", &Model::get_ng, &Model::default_get_ng,
              "Return the number of inequality constraints.")
-        .add_property(
-            "nh", bp::make_function(&Model::get_nh),
-            bp::make_setter(&Model::nh_, bp::return_internal_reference<>()),
-            "number of equality constraints")
+        .add_property("nh", bp::make_function(&Model::get_nh),
+                      "number of equality constraints")
         .def("get_nh", &Model::get_nh, &Model::default_get_nh,
              "Return the number of equality constraints.")
         .add_property("ng_T", bp::make_function(&Model::get_ng_T),

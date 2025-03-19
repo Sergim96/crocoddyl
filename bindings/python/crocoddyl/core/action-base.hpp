@@ -176,14 +176,6 @@ class ActionModelAbstractTpl_wrap
     return ret;
   }
 };
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(ActionModel_get_ng_wraps,
-                                       ActionModelAbstract::get_ng, 0, 0)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(ActionModel_get_nh_wraps,
-                                       ActionModelAbstract::get_nh, 0, 0)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(ActionModel_get_ng_T_wraps,
-                                       ActionModelAbstract::get_ng_T, 0, 0)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(ActionModel_get_nh_T_wraps,
-                                       ActionModelAbstract::get_nh_T, 0, 0)
 
 }  // namespace python
 }  // namespace crocoddyl
