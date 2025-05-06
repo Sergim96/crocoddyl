@@ -23,6 +23,7 @@ template <typename _Scalar>
 class ContactModel6DLoopTpl : public ContactModelAbstractTpl<_Scalar> {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  CROCODDYL_DERIVED_CAST(ContactModelBase, ContactModel6DLoopTpl)
 
   typedef _Scalar Scalar;
   typedef MathBaseTpl<Scalar> MathBase;
@@ -54,13 +55,12 @@ class ContactModel6DLoopTpl : public ContactModelAbstractTpl<_Scalar> {
    * @param[in] nu                Dimension of the control vector
    * @param[in] gains             Baumgarte stabilization gains
    */
-  ContactModel6DLoopTpl(
-      boost::shared_ptr<StateMultibody> state, const int joint1_id,
-      const SE3 &joint1_placement, const int joint2_id,
-      const SE3 &joint2_placement,
-      const pinocchio::ReferenceFrame type, 
-      const std::size_t nu,
-      const Vector2s &gains = Vector2s::Zero());
+  ContactModel6DLoopTpl(std::shared_ptr<StateMultibody> state,
+                        const int joint1_id, const SE3 &joint1_placement,
+                        const int joint2_id, const SE3 &joint2_placement,
+                        const pinocchio::ReferenceFrame type,
+                        const std::size_t nu,
+                        const Vector2s &gains = Vector2s::Zero());
 
   /**
    * @brief Initialize the 6d loop-contact model from joint and placements
@@ -76,10 +76,10 @@ class ContactModel6DLoopTpl : public ContactModelAbstractTpl<_Scalar> {
    * @param[in] type              Reference frame of contact
    * @param[in] gains             Baumgarte stabilization gains
    */
-  ContactModel6DLoopTpl(boost::shared_ptr<StateMultibody> state,
+  ContactModel6DLoopTpl(std::shared_ptr<StateMultibody> state,
                         const int joint1_id, const SE3 &joint1_placement,
                         const int joint2_id, const SE3 &joint2_placement,
-                        const pinocchio::ReferenceFrame type, 
+                        const pinocchio::ReferenceFrame type,
                         const Vector2s &gains = Vector2s::Zero());
 
   virtual ~ContactModel6DLoopTpl();
@@ -91,8 +91,8 @@ class ContactModel6DLoopTpl : public ContactModelAbstractTpl<_Scalar> {
    * @param[in] x     State point \f$\mathbf{x}\in\mathbb{R}^{ndx}\f$
    * @param[in] u     Control input \f$\mathbf{u}\in\mathbb{R}^{nu}\f$
    */
-  virtual void calc(const boost::shared_ptr<ContactDataAbstract> &data,
-                    const Eigen::Ref<const VectorXs> &x);
+  virtual void calc(const std::shared_ptr<ContactDataAbstract> &data,
+                    const Eigen::Ref<const VectorXs> &x) override;
 
   /**
    * @brief Compute the derivatives of the 6d loop-contact holonomic constraint
@@ -101,8 +101,8 @@ class ContactModel6DLoopTpl : public ContactModelAbstractTpl<_Scalar> {
    * @param[in] x     State point \f$\mathbf{x}\in\mathbb{R}^{ndx}\f$
    * @param[in] u     Control input \f$\mathbf{u}\in\mathbb{R}^{nu}\f$
    */
-  virtual void calcDiff(const boost::shared_ptr<ContactDataAbstract> &data,
-                        const Eigen::Ref<const VectorXs> &x);
+  virtual void calcDiff(const std::shared_ptr<ContactDataAbstract> &data,
+                        const Eigen::Ref<const VectorXs> &x) override;
 
   /**
    * @brief Convert the force into a stack of spatial forces
@@ -110,8 +110,8 @@ class ContactModel6DLoopTpl : public ContactModelAbstractTpl<_Scalar> {
    * @param[in] data   6d loop-contact data
    * @param[in] force  6d force
    */
-  virtual void updateForce(const boost::shared_ptr<ContactDataAbstract> &data,
-                           const VectorXs &force);
+  virtual void updateForce(const std::shared_ptr<ContactDataAbstract> &data,
+                           const VectorXs &force) override;
 
   /**
    * @brief Updates the force differential for the given contact data.
@@ -125,20 +125,31 @@ class ContactModel6DLoopTpl : public ContactModelAbstractTpl<_Scalar> {
    * @param[in] df_du Matrix representing the differential of the force with
    * respect to the control variables.
    */
-  virtual void updateForceDiff(
-      const boost::shared_ptr<ContactDataAbstract> &data, const MatrixXs &df_dx,
-      const MatrixXs &df_du);
+  virtual void updateForceDiff(const std::shared_ptr<ContactDataAbstract> &data,
+                               const MatrixXs &df_dx, const MatrixXs &df_du);
 
   /**
    * @brief Create the 6d loop-contact data
    */
-  virtual boost::shared_ptr<ContactDataAbstract> createData(
-      pinocchio::DataTpl<Scalar> *const data);
+  virtual std::shared_ptr<ContactDataAbstract> createData(
+      pinocchio::DataTpl<Scalar> *const data) override;
+
+  /**
+   * @brief Cast the contact-6d-loop model to a different scalar type.
+   *
+   * It is useful for operations requiring different precision or scalar types.
+   *
+   * @tparam NewScalar The new scalar type to cast to.
+   * @return ContactModel6DTpl<NewScalar> A contact model with the
+   * new scalar type.
+   */
+  template <typename NewScalar>
+  ContactModel6DLoopTpl<NewScalar> cast() const;
 
   /**
    * @brief Return the first contact frame parent joint
    */
-  const int get_joint1_id() const;
+  int get_joint1_id() const;
 
   /**
    * @brief Return the first contact frame placement with respect to the parent
@@ -149,7 +160,7 @@ class ContactModel6DLoopTpl : public ContactModelAbstractTpl<_Scalar> {
   /**
    * @brief Return the second contact frame parent joint
    */
-  const int get_joint2_id() const;
+  int get_joint2_id() const;
 
   /**
    * @brief Return the second contact frame placement with respect to the parent
@@ -194,7 +205,7 @@ class ContactModel6DLoopTpl : public ContactModelAbstractTpl<_Scalar> {
    *
    * @param[out] os  Output stream object
    */
-  virtual void print(std::ostream &os) const;
+  virtual void print(std::ostream &os) const override;
 
  protected:
   using Base::id_;

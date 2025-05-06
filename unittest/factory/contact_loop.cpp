@@ -36,7 +36,7 @@ std::ostream& operator<<(std::ostream& os,
 ContactLoopModelFactory::ContactLoopModelFactory() {}
 ContactLoopModelFactory::~ContactLoopModelFactory() {}
 
-boost::shared_ptr<crocoddyl::ContactModelAbstract>
+std::shared_ptr<crocoddyl::ContactModelAbstract>
 ContactLoopModelFactory::create(ContactLoopModelTypes::Type contact_type,
                                 PinocchioModelTypes::Type model_type,
                                 const int joint1_id,
@@ -45,15 +45,15 @@ ContactLoopModelFactory::create(ContactLoopModelTypes::Type contact_type,
                                 const pinocchio::SE3& joint2_placement,
                                 Eigen::Vector2d gains, std::size_t nu) const {
   PinocchioModelFactory model_factory(model_type);
-  boost::shared_ptr<crocoddyl::StateMultibody> state =
-      boost::make_shared<crocoddyl::StateMultibody>(model_factory.create());
-  boost::shared_ptr<crocoddyl::ContactModelAbstract> contact;
+  std::shared_ptr<crocoddyl::StateMultibody> state =
+      std::make_shared<crocoddyl::StateMultibody>(model_factory.create());
+  std::shared_ptr<crocoddyl::ContactModelAbstract> contact;
   if (nu == std::numeric_limits<std::size_t>::max()) {
     nu = state->get_nv();
   }
   switch (contact_type) {
     case ContactLoopModelTypes::ContactModel6DLoop_LOCAL:
-      contact = boost::make_shared<crocoddyl::ContactModel6DLoop>(
+      contact = std::make_shared<crocoddyl::ContactModel6DLoop>(
           state, joint1_id, joint1_placement, joint2_id, joint2_placement,
           pinocchio::ReferenceFrame::LOCAL, nu, gains);
       break;
@@ -64,14 +64,14 @@ ContactLoopModelFactory::create(ContactLoopModelTypes::Type contact_type,
   return contact;
 }
 
-boost::shared_ptr<crocoddyl::ContactModelAbstract>
+std::shared_ptr<crocoddyl::ContactModelAbstract>
 create_random_loop_contact() {
   static bool once = true;
   if (once) {
     srand((unsigned)time(NULL));
     once = false;
   }
-  boost::shared_ptr<crocoddyl::ContactModelAbstract> contact;
+  std::shared_ptr<crocoddyl::ContactModelAbstract> contact;
   ContactLoopModelFactory factory;
   ;
   if (rand() % 1 == 0) {
