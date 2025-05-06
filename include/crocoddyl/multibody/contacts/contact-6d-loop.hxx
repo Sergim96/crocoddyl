@@ -18,16 +18,14 @@ namespace crocoddyl {
 
 template <typename Scalar>
 ContactModel6DLoopTpl<Scalar>::ContactModel6DLoopTpl(
-    boost::shared_ptr<StateMultibody> state, const int joint1_id,
+    std::shared_ptr<StateMultibody> state, const int joint1_id,
     const SE3 &joint1_placement, const int joint2_id,
-    const SE3 &joint2_placement,
-    const pinocchio::ReferenceFrame type,
-    const std::size_t nu,
-    const Vector2s &gains)
+    const SE3 &joint2_placement, const pinocchio::ReferenceFrame type,
+    const std::size_t nu, const Vector2s &gains)
     : Base(state, pinocchio::ReferenceFrame::LOCAL, 6, nu),
       joint1_id_(joint1_id),
-      joint2_id_(joint2_id),
       joint1_placement_(joint1_placement),
+      joint2_id_(joint2_id),
       joint2_placement_(joint2_placement),
       gains_(gains) {
   if (type != pinocchio::ReferenceFrame::LOCAL) {
@@ -44,15 +42,14 @@ ContactModel6DLoopTpl<Scalar>::ContactModel6DLoopTpl(
 
 template <typename Scalar>
 ContactModel6DLoopTpl<Scalar>::ContactModel6DLoopTpl(
-    boost::shared_ptr<StateMultibody> state, const int joint1_id,
+    std::shared_ptr<StateMultibody> state, const int joint1_id,
     const SE3 &joint1_placement, const int joint2_id,
-    const SE3 &joint2_placement,
-    const pinocchio::ReferenceFrame type,
+    const SE3 &joint2_placement, const pinocchio::ReferenceFrame type,
     const Vector2s &gains)
     : Base(state, pinocchio::ReferenceFrame::LOCAL, 6),
       joint1_id_(joint1_id),
-      joint2_id_(joint2_id),
       joint1_placement_(joint1_placement),
+      joint2_id_(joint2_id),
       joint2_placement_(joint2_placement),
       gains_(gains) {
   if (type != pinocchio::ReferenceFrame::LOCAL) {
@@ -72,7 +69,7 @@ ContactModel6DLoopTpl<Scalar>::~ContactModel6DLoopTpl() {}
 
 template <typename Scalar>
 void ContactModel6DLoopTpl<Scalar>::calc(
-    const boost::shared_ptr<ContactDataAbstract> &data,
+    const std::shared_ptr<ContactDataAbstract> &data,
     const Eigen::Ref<const VectorXs> &) {
   Data *d = static_cast<Data *>(data.get());
   pinocchio::getJointJacobian(*state_->get_pinocchio().get(), *d->pinocchio,
@@ -111,7 +108,7 @@ void ContactModel6DLoopTpl<Scalar>::calc(
 
 template <typename Scalar>
 void ContactModel6DLoopTpl<Scalar>::calcDiff(
-    const boost::shared_ptr<ContactDataAbstract> &data,
+    const std::shared_ptr<ContactDataAbstract> &data,
     const Eigen::Ref<const VectorXs> &) {
   Data *d = static_cast<Data *>(data.get());
   const std::size_t nv = state_->get_nv();
@@ -181,7 +178,7 @@ void ContactModel6DLoopTpl<Scalar>::calcDiff(
 
 template <typename Scalar>
 void ContactModel6DLoopTpl<Scalar>::updateForce(
-    const boost::shared_ptr<ContactDataAbstract> &data, const VectorXs &force) {
+    const std::shared_ptr<ContactDataAbstract> &data, const VectorXs &force) {
   if (force.size() != 6) {
     throw_pretty("Contact force vector has wrong dimension (expected 6 got "
                  << force.size() << ")");
@@ -209,7 +206,7 @@ void ContactModel6DLoopTpl<Scalar>::updateForce(
 
 template <typename Scalar>
 void ContactModel6DLoopTpl<Scalar>::updateForceDiff(
-    const boost::shared_ptr<ContactDataAbstract> &data, const MatrixXs &df_dx,
+    const std::shared_ptr<ContactDataAbstract> &data, const MatrixXs &df_dx,
     const MatrixXs &df_du) {
   if (static_cast<std::size_t>(df_dx.rows()) != nc_ ||
       static_cast<std::size_t>(df_dx.cols()) != state_->get_ndx())
@@ -224,11 +221,24 @@ void ContactModel6DLoopTpl<Scalar>::updateForceDiff(
 }
 
 template <typename Scalar>
-boost::shared_ptr<ContactDataAbstractTpl<Scalar>>
+std::shared_ptr<ContactDataAbstractTpl<Scalar>>
 ContactModel6DLoopTpl<Scalar>::createData(
     pinocchio::DataTpl<Scalar> *const data) {
-  return boost::allocate_shared<Data>(Eigen::aligned_allocator<Data>(), this,
-                                      data);
+  return std::allocate_shared<Data>(Eigen::aligned_allocator<Data>(), this,
+                                    data);
+}
+
+template <typename Scalar>
+template <typename NewScalar>
+ContactModel6DLoopTpl<NewScalar> ContactModel6DLoopTpl<Scalar>::cast() const {
+  typedef ContactModel6DLoopTpl<NewScalar> ReturnType;
+  typedef StateMultibodyTpl<NewScalar> StateType;
+  ReturnType ret(
+      std::make_shared<StateType>(state_->template cast<NewScalar>()), 
+      joint1_id_, joint1_placement_.template cast<NewScalar>(),
+      joint2_id_, joint2_placement_.template cast<NewScalar>(), type_, nu_,
+      gains_.template cast<NewScalar>());
+  return ret;
 }
 
 template <typename Scalar>
@@ -238,12 +248,12 @@ void ContactModel6DLoopTpl<Scalar>::print(std::ostream &os) const {
 }
 
 template <typename Scalar>
-const int ContactModel6DLoopTpl<Scalar>::get_joint1_id() const {
+int ContactModel6DLoopTpl<Scalar>::get_joint1_id() const {
   return joint1_id_;
 }
 
 template <typename Scalar>
-const int ContactModel6DLoopTpl<Scalar>::get_joint2_id() const {
+int ContactModel6DLoopTpl<Scalar>::get_joint2_id() const {
   return joint2_id_;
 }
 

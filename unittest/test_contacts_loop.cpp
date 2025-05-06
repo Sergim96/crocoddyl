@@ -27,7 +27,7 @@ void test_construct_data(ContactLoopModelTypes::Type contact_type,
                          PinocchioModelTypes::Type model_type) {
   // create the model
   ContactLoopModelFactory factory;
-  boost::shared_ptr<crocoddyl::ContactModelAbstract> model =
+  std::shared_ptr<crocoddyl::ContactModelAbstract> model =
       factory.create(contact_type, model_type, 0, pinocchio::SE3::Identity(), 0,
                      pinocchio::SE3::Identity(), Eigen::Vector2d::Random());
 
@@ -36,10 +36,10 @@ void test_construct_data(ContactLoopModelTypes::Type contact_type,
   tmp << *model;
 
   // create the corresponding data object
-  const boost::shared_ptr<pinocchio::Model>& pinocchio_model =
+  const std::shared_ptr<pinocchio::Model>& pinocchio_model =
       model->get_state()->get_pinocchio();
   pinocchio::Data pinocchio_data(*pinocchio_model.get());
-  boost::shared_ptr<crocoddyl::ContactDataAbstract> data =
+  std::shared_ptr<crocoddyl::ContactDataAbstract> data =
       model->createData(&pinocchio_data);
 }
 
@@ -47,15 +47,15 @@ void test_calc_fetch_jacobians(ContactLoopModelTypes::Type contact_type,
                                PinocchioModelTypes::Type model_type) {
   // create the model
   ContactLoopModelFactory factory;
-  boost::shared_ptr<crocoddyl::ContactModelAbstract> model =
+  std::shared_ptr<crocoddyl::ContactModelAbstract> model =
       factory.create(contact_type, model_type, 1, pinocchio::SE3::Random(), 2,
                      pinocchio::SE3::Random(), Eigen::Vector2d::Random());
 
   // create the corresponding data object
-  const boost::shared_ptr<pinocchio::Model>& pinocchio_model =
+  const std::shared_ptr<pinocchio::Model>& pinocchio_model =
       model->get_state()->get_pinocchio();
   pinocchio::Data pinocchio_data(*pinocchio_model.get());
-  boost::shared_ptr<crocoddyl::ContactDataAbstract> data =
+  std::shared_ptr<crocoddyl::ContactDataAbstract> data =
       model->createData(&pinocchio_data);
 
   // Compute the jacobian and check that the impulse model fetch it.
@@ -83,15 +83,15 @@ void test_calc_diff_fetch_derivatives(ContactLoopModelTypes::Type contact_type,
                                       PinocchioModelTypes::Type model_type) {
   // create the model
   ContactLoopModelFactory factory;
-  boost::shared_ptr<crocoddyl::ContactModelAbstract> model =
+  std::shared_ptr<crocoddyl::ContactModelAbstract> model =
       factory.create(contact_type, model_type, 1, pinocchio::SE3::Random(), 2,
                      pinocchio::SE3::Random(), Eigen::Vector2d::Random());
 
   // create the corresponding data object
-  const boost::shared_ptr<pinocchio::Model>& pinocchio_model =
+  const std::shared_ptr<pinocchio::Model>& pinocchio_model =
       model->get_state()->get_pinocchio();
   pinocchio::Data pinocchio_data(*pinocchio_model.get());
-  boost::shared_ptr<crocoddyl::ContactDataAbstract> data =
+  std::shared_ptr<crocoddyl::ContactDataAbstract> data =
       model->createData(&pinocchio_data);
 
   // Compute the jacobian and check that the impulse model fetch it.
@@ -121,15 +121,15 @@ void test_update_force(ContactLoopModelTypes::Type contact_type,
                        PinocchioModelTypes::Type model_type) {
   // create the model
   ContactLoopModelFactory factory;
-  boost::shared_ptr<crocoddyl::ContactModelAbstract> model =
+  std::shared_ptr<crocoddyl::ContactModelAbstract> model =
       factory.create(contact_type, model_type, 1, pinocchio::SE3::Random(), 2,
                      pinocchio::SE3::Random(), Eigen::Vector2d::Random());
 
   // create the corresponding data object
-  const boost::shared_ptr<pinocchio::Model>& pinocchio_model =
+  const std::shared_ptr<pinocchio::Model>& pinocchio_model =
       model->get_state()->get_pinocchio();
   pinocchio::Data pinocchio_data(*pinocchio_model.get());
-  boost::shared_ptr<crocoddyl::ContactDataAbstract> data =
+  std::shared_ptr<crocoddyl::ContactDataAbstract> data =
       model->createData(&pinocchio_data);
 
   // Create a random force and update it
@@ -151,15 +151,15 @@ void test_update_force_diff(ContactLoopModelTypes::Type contact_type,
                             PinocchioModelTypes::Type model_type) {
   // create the model
   ContactLoopModelFactory factory;
-  boost::shared_ptr<crocoddyl::ContactModelAbstract> model =
+  std::shared_ptr<crocoddyl::ContactModelAbstract> model =
       factory.create(contact_type, model_type, 1, pinocchio::SE3::Random(), 2,
                      pinocchio::SE3::Random(), Eigen::Vector2d::Random());
 
   // create the corresponding data object
-  const boost::shared_ptr<pinocchio::Model>& pinocchio_model =
+  const std::shared_ptr<pinocchio::Model>& pinocchio_model =
       model->get_state()->get_pinocchio();
   pinocchio::Data pinocchio_data(*pinocchio_model.get());
-  boost::shared_ptr<crocoddyl::ContactDataAbstract> data =
+  std::shared_ptr<crocoddyl::ContactDataAbstract> data =
       model->createData(&pinocchio_data);
 
   // Create a random force and update it
@@ -187,7 +187,7 @@ void test_partial_derivatives_against_numdiff(
 
   // create the model
   ContactLoopModelFactory factory;
-  boost::shared_ptr<crocoddyl::ContactModelAbstract> model =
+  std::shared_ptr<crocoddyl::ContactModelAbstract> model =
       factory.create(contact_type, model_type, 0, pinocchio::SE3::Identity(), 0,
                      pinocchio::SE3::Identity(), Eigen::Vector2d::Random());
 
@@ -195,12 +195,12 @@ void test_partial_derivatives_against_numdiff(
   pinocchio::Model& pinocchio_model =
       *model->get_state()->get_pinocchio().get();
   pinocchio::Data pinocchio_data(pinocchio_model);
-  boost::shared_ptr<crocoddyl::ContactDataAbstract> data =
+  std::shared_ptr<crocoddyl::ContactDataAbstract> data =
       model->createData(&pinocchio_data);
 
   // Create the equivalent num diff model and data.
   crocoddyl::ContactModelNumDiff model_num_diff(model);
-  const boost::shared_ptr<crocoddyl::ContactDataAbstract>& data_num_diff =
+  const std::shared_ptr<crocoddyl::ContactDataAbstract>& data_num_diff =
       model_num_diff.createData(&pinocchio_data);
 
   // Generating random values for the state
@@ -211,8 +211,9 @@ void test_partial_derivatives_against_numdiff(
 
   // set the function that needs to be called at every step of the numdiff
   std::vector<crocoddyl::ContactModelNumDiff::ReevaluationFunction> reevals;
-  reevals.push_back(boost::bind(&crocoddyl::unittest::updateAllPinocchio,
-                                &pinocchio_model, &pinocchio_data, _1, _2));
+  reevals.push_back(boost::bind(&crocoddyl::unittest::updateAllPinocchio<
+                    double, 0, pinocchio::JointCollectionDefaultTpl>,
+                    &pinocchio_model, &pinocchio_data, _1, _2));
   model_num_diff.set_reevals(reevals);
 
   // Computing the contact derivatives

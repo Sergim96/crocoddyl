@@ -44,7 +44,7 @@ class ContactLoopModelFactory {
   explicit ContactLoopModelFactory();
   ~ContactLoopModelFactory();
 
-  boost::shared_ptr<crocoddyl::ContactModelAbstract> create(
+  std::shared_ptr<crocoddyl::ContactModelAbstract> create(
       ContactLoopModelTypes::Type contact_type,
       PinocchioModelTypes::Type model_type, const int joint1_id,
       const pinocchio::SE3& joint1_placement, const int joint2_id,
@@ -52,7 +52,7 @@ class ContactLoopModelFactory {
       std::size_t nu = std::numeric_limits<std::size_t>::max()) const;
 };
 
-boost::shared_ptr<crocoddyl::ContactModelAbstract> create_random_loop_contact();
+std::shared_ptr<crocoddyl::ContactModelAbstract> create_random_loop_contact();
 
 }  // namespace unittest
 }  // namespace crocoddyl
