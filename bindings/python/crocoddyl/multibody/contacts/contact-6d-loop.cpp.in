@@ -7,6 +7,7 @@
 // All rights reserved.
 ///////////////////////////////////////////////////////////////////////////////
 
+// Auto-generated file for @SCALAR_TYPE@
 #include "crocoddyl/multibody/contacts/contact-6d-loop.hpp"
 #include "python/crocoddyl/multibody/multibody.hpp"
 
@@ -108,8 +109,8 @@ struct ContactData6DLoopVisitor
       .def(CopyableVisitor<Data>());
 
 void exposeContact6DLoop() {
-  CROCODDYL_PYTHON_SCALARS(CROCODDYL_CONTACT_MODEL_6D_LOOP_PYTHON_BINDINGS)
-  CROCODDYL_PYTHON_SCALARS(CROCODDYL_CONTACT_DATA_6D_LOOP_PYTHON_BINDINGS)
+  CROCODDYL_CONTACT_MODEL_6D_LOOP_PYTHON_BINDINGS(@SCALAR_TYPE@)
+  CROCODDYL_CONTACT_DATA_6D_LOOP_PYTHON_BINDINGS(@SCALAR_TYPE@)
 }
 
 }  // namespace python
