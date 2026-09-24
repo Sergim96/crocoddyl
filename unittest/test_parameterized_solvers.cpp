@@ -515,6 +515,34 @@ void check_line_search_exception_rejects_candidate() {
 }
 
 template <typename Scalar>
+void check_nonparameterized_line_search_exception_rejects_candidate() {
+  typedef crocoddyl::ActionModelAbstractTpl<Scalar> ActionModel;
+  typedef crocoddyl::ActionModelLQRTpl<Scalar> LQR;
+  typedef crocoddyl::ShootingProblemTpl<Scalar> Problem;
+  typedef crocoddyl::SolverFDDPTpl<Scalar> Solver;
+  typedef typename crocoddyl::MathBaseTpl<Scalar>::VectorXs VectorXs;
+
+  const std::size_t T = 2;
+  const std::size_t nx = 4;
+  const std::shared_ptr<LQR> running = std::make_shared<LQR>(nx, 2);
+  const std::shared_ptr<LQR> terminal = std::make_shared<LQR>(nx, 0);
+  const std::shared_ptr<Problem> problem = std::make_shared<Problem>(
+      VectorXs::Zero(nx), std::vector<std::shared_ptr<ActionModel>>(T, running),
+      terminal);
+  problem->set_nthreads(1);
+
+  std::vector<VectorXs> us(T, VectorXs::Zero(2));
+  std::vector<VectorXs> xs(T + 1);
+  problem->rollout(us, xs);
+
+  CandidateExceptionSolver<Solver> solver(
+      std::static_pointer_cast<typename Solver::ProblemAbstract>(problem));
+  solver.solve(xs, us, 1, true);
+
+  BOOST_CHECK(!solver.accepted());
+}
+
+template <typename Scalar>
 void check_parameterized_intro_and_no_malloc() {
   typedef crocoddyl::SolverIntroTpl<Scalar> Solver;
   typedef typename crocoddyl::MathBaseTpl<Scalar>::MatrixXs MatrixXs;
@@ -735,6 +763,10 @@ bool init_function() {
       BOOST_TEST_CASE(&check_line_search_exception_rejects_candidate<double>));
   ts->add(
       BOOST_TEST_CASE(&check_line_search_exception_rejects_candidate<float>));
+  ts->add(BOOST_TEST_CASE(
+      &check_nonparameterized_line_search_exception_rejects_candidate<double>));
+  ts->add(BOOST_TEST_CASE(
+      &check_nonparameterized_line_search_exception_rejects_candidate<float>));
   ts->add(BOOST_TEST_CASE(&check_parameterized_intro_and_no_malloc<double>));
   ts->add(BOOST_TEST_CASE(&check_parameterized_intro_and_no_malloc<float>));
   ts->add(BOOST_TEST_CASE(&check_impulse_node_solvers<double>));

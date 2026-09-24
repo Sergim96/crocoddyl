@@ -117,6 +117,7 @@ bool SolverAbstractTpl<Scalar>::solve(const std::vector<VectorXs>& init_xs,
       try {
         tryStep(steplength_);
       } catch (std::exception& e) {
+        acceptstep_ = false;
         std::string msg = e.what();
         if (msg.find("must be implemented in subclass.") != std::string::npos) {
           std::cerr << msg << std::endl;
